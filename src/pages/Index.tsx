@@ -113,7 +113,7 @@ const Index = () => {
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <Icon name="Layers" size={24} className="text-white" />
               </div>
-              <span className="text-xl font-bold text-foreground">ТермоПанель</span>
+              <span className="text-xl font-bold text-foreground">ТЕРМОПАН</span>
             </div>
             <div className="hidden md:flex gap-6">
               {['Главная', 'Продукция', 'Преимущества', 'Технология', 'Калькулятор', 'Проекты', 'Контакты'].map((item, idx) => (
