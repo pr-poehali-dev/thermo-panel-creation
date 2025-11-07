@@ -5,10 +5,32 @@ import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('hero');
+  const [calcArea, setCalcArea] = useState('');
+  const [calcType, setCalcType] = useState('facade');
+  const [calcThickness, setCalcThickness] = useState('60');
+  const [calcResult, setCalcResult] = useState<number | null>(null);
+
+  const calculatePrice = () => {
+    const area = parseFloat(calcArea);
+    if (isNaN(area) || area <= 0) {
+      alert('Введите корректную площадь');
+      return;
+    }
+
+    const prices: Record<string, Record<string, number>> = {
+      facade: { '40': 1200, '60': 1500, '80': 1800, '100': 2100 },
+      brick: { '60': 1800, '80': 2200 },
+      corner: { '40': 450, '60': 550 }
+    };
+
+    const pricePerM2 = prices[calcType][calcThickness] || 1500;
+    const total = area * pricePerM2;
+    setCalcResult(total);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'products', 'advantages', 'technology', 'projects', 'contacts'];
+      const sections = ['hero', 'products', 'advantages', 'technology', 'calculator', 'projects', 'contacts'];
       const current = sections.find(section => {
         const element = document.getElementById(section);
         if (element) {
@@ -94,12 +116,12 @@ const Index = () => {
               <span className="text-xl font-bold text-foreground">ТермоПанель</span>
             </div>
             <div className="hidden md:flex gap-6">
-              {['Главная', 'Продукция', 'Преимущества', 'Технология', 'Проекты', 'Контакты'].map((item, idx) => (
+              {['Главная', 'Продукция', 'Преимущества', 'Технология', 'Калькулятор', 'Проекты', 'Контакты'].map((item, idx) => (
                 <button
                   key={item}
-                  onClick={() => scrollToSection(['hero', 'products', 'advantages', 'technology', 'projects', 'contacts'][idx])}
+                  onClick={() => scrollToSection(['hero', 'products', 'advantages', 'technology', 'calculator', 'projects', 'contacts'][idx])}
                   className={`text-sm font-medium transition-colors hover:text-primary ${
-                    activeSection === ['hero', 'products', 'advantages', 'technology', 'projects', 'contacts'][idx]
+                    activeSection === ['hero', 'products', 'advantages', 'technology', 'calculator', 'projects', 'contacts'][idx]
                       ? 'text-primary'
                       : 'text-muted-foreground'
                   }`}
@@ -260,6 +282,148 @@ const Index = () => {
                 className="rounded-2xl shadow-2xl"
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="calculator" className="py-16 md:py-24 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">Калькулятор стоимости</h2>
+              <p className="text-lg text-muted-foreground">
+                Рассчитайте примерную стоимость термопанелей для вашего объекта
+              </p>
+            </div>
+            <Card className="p-8">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold mb-3">Тип термопанели</label>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setCalcType('facade')}
+                      className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                        calcType === 'facade'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="font-semibold">Фасадные термопанели</div>
+                      <div className="text-sm text-muted-foreground">От 1200 ₽/м²</div>
+                    </button>
+                    <button
+                      onClick={() => setCalcType('brick')}
+                      className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                        calcType === 'brick'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="font-semibold">Панели под кирпич</div>
+                      <div className="text-sm text-muted-foreground">От 1800 ₽/м²</div>
+                    </button>
+                    <button
+                      onClick={() => setCalcType('corner')}
+                      className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                        calcType === 'corner'
+                          ? 'border-primary bg-primary/5'
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                    >
+                      <div className="font-semibold">Угловые элементы</div>
+                      <div className="text-sm text-muted-foreground">От 450 ₽/шт</div>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-3">Толщина панели (мм)</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {calcType === 'facade' && ['40', '60', '80', '100'].map((thickness) => (
+                        <button
+                          key={thickness}
+                          onClick={() => setCalcThickness(thickness)}
+                          className={`p-3 rounded-lg border-2 font-semibold transition-all ${
+                            calcThickness === thickness
+                              ? 'border-primary bg-primary text-white'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {thickness} мм
+                        </button>
+                      ))}
+                      {calcType === 'brick' && ['60', '80'].map((thickness) => (
+                        <button
+                          key={thickness}
+                          onClick={() => setCalcThickness(thickness)}
+                          className={`p-3 rounded-lg border-2 font-semibold transition-all ${
+                            calcThickness === thickness
+                              ? 'border-primary bg-primary text-white'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {thickness} мм
+                        </button>
+                      ))}
+                      {calcType === 'corner' && ['40', '60'].map((thickness) => (
+                        <button
+                          key={thickness}
+                          onClick={() => setCalcThickness(thickness)}
+                          className={`p-3 rounded-lg border-2 font-semibold transition-all ${
+                            calcThickness === thickness
+                              ? 'border-primary bg-primary text-white'
+                              : 'border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {thickness} мм
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold mb-3">
+                      {calcType === 'corner' ? 'Количество элементов' : 'Площадь (м²)'}
+                    </label>
+                    <input
+                      type="number"
+                      value={calcArea}
+                      onChange={(e) => setCalcArea(e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-lg"
+                      placeholder={calcType === 'corner' ? 'Введите количество' : 'Введите площадь'}
+                    />
+                  </div>
+
+                  <Button onClick={calculatePrice} className="w-full gap-2" size="lg">
+                    <Icon name="Calculator" size={20} />
+                    Рассчитать стоимость
+                  </Button>
+
+                  {calcResult !== null && (
+                    <div className="p-6 bg-primary/10 rounded-lg border-2 border-primary animate-scale-in">
+                      <div className="text-sm text-muted-foreground mb-2">Примерная стоимость:</div>
+                      <div className="text-3xl font-bold text-primary mb-3">
+                        {calcResult.toLocaleString('ru-RU')} ₽
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Цена указана без учета доставки и монтажа
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-8 p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <Icon name="Info" size={20} className="text-primary mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-muted-foreground">
+                    Расчет является предварительным. Для точной стоимости свяжитесь с нашими менеджерами. 
+                    Цена зависит от объема заказа, сложности монтажа и региона доставки.
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
